@@ -1,0 +1,41 @@
+For the enhancement(s) I chose, I made it so that the script:
+1. Writes the scanned results to a file called output.csv
+2. Allows the script to scan for any speicific file extension, not just .txt(default file type)
+3. At the end of the output, displays how many files and total size are in each subfolder
+    - An example of this part: py scan.py path/to/your/folder -e exe (scan for all the .exe files in the directory and subdirectories)
+
+How to normally run the script: py scan.py path/to/your/folder
+
+Sample Output:
+    Found 20 '.txt' files.
+
+    File                                      Size (KB) 
+    ----------------------------------------------------
+    docs\file0.txt                                  0.1 
+    docs\file1.txt                                  0.1     
+    docs\file2.txt                                  0.1     
+    docs\file3.txt                                  0.1     
+    docs\file4.txt                                  0.1     
+    docs\subfolder\file0.txt                        0.1     
+    docs\subfolder\file1.txt                        0.1     
+    docs\subfolder\file2.txt                        0.1     
+    docs\subfolder\file3.txt                        0.1     
+    docs\subfolder\file4.txt                        0.1     
+    logs\file0.txt                                  0.1     
+    logs\file1.txt                                  0.1     
+    logs\file2.txt                                  0.1     
+    logs\file3.txt                                  0.1     
+    logs\file4.txt                                  0.1     
+    logs\archive\file0.txt                          0.1     
+    logs\archive\file1.txt                          0.1     
+    logs\archive\file2.txt                          0.1     
+    logs\archive\file3.txt                          0.1     
+    logs\archive\file4.txt                          0.1     
+    ----------------------------------------------------    
+    Total size: 2.0 KB
+
+    Summary:
+    docs/           —  5 files, 0.5 KB
+    docs/subfolder/ —  5 files, 0.5 KB
+    logs/           —  5 files, 0.5 KB
+    logs/archive/   —  5 files, 0.5 KB
