@@ -31,6 +31,7 @@ import io
 import re
 import subprocess
 import sys
+import os
 from pathlib import Path
 from xml.etree import ElementTree as ET
 
@@ -186,13 +187,95 @@ def win_services(watch: list[str], auto_fix: bool):
     print()
 
 # ══════════════════════════════════════════════════════════════════════════
+# Task 4: Scheduled Tasks (win-tasks)
+# ══════════════════════════════════════════════════════════════════════════
+
+def win_tasks():
+    try:
+        out = subprocess.check_output(["schtasks", "/query", "/fo", "LIST", "/v"], text=True)
+        tasks = []
+        task = {}
+        for line in out.splitlines():
+            if not line.strip():
+                if task:
+                    tasks.append(task)
+                    task = {}
+                continue
+            if ":" in line:
+                key, val = line.split(":", 1)
+                task[key.strip()] = val.strip()
+        print(f"\n🗓️ Scheduled Tasks ({len(tasks)} entries)")
+        for t in tasks[:10]:  # Show only first 10 for brevity
+            print(f"- {t.get('TaskName', '?')} | Status: {t.get('Status', '?')} | Last Run: {t.get('Last Run Time', '?')}")
+        print("... (truncated)\n")
+    except Exception as e:
+        print(f"❌ Failed to query scheduled tasks: {e}")
+
+# ══════════════════════════════════════════════════════════════════════════
+# Task 5: Shadow Storage (win-shadow)
+# ══════════════════════════════════════════════════════════════════════════
+
+def win_shadow():
+    try:
+        out = subprocess.check_output(["vssadmin", "list", "shadowstorage"], text=True)
+        print("\n🧊 Shadow Storage Info")
+        print(out)
+    except Exception as e:
+        print(f"❌ Failed to query shadow storage: {e}")
+
+# ══════════════════════════════════════════════════════════════════════════
+# Task 6: Startup Programs (win-startup)
+# ══════════════════════════════════════════════════════════════════════════
+
+def win_startup():
+    import winreg
+    from pathlib import Path
+
+    print("\n🚀 Startup Programs")
+    entries = []
+
+    # Registry locations
+    reg_paths = [
+        (winreg.HKEY_LOCAL_MACHINE, r"SOFTWARE\Microsoft\Windows\CurrentVersion\Run"),
+        (winreg.HKEY_CURRENT_USER, r"SOFTWARE\Microsoft\Windows\CurrentVersion\Run"),
+    ]
+    for root, path in reg_paths:
+        try:
+            with winreg.OpenKey(root, path) as key:
+                for i in range(winreg.QueryInfoKey(key)[1]):
+                    name, val, _ = winreg.EnumValue(key, i)
+                    entries.append((name, val))
+        except Exception:
+            continue
+
+    # Startup folders
+    folders = [
+        Path(os.getenv("APPDATA", "")) / r"Microsoft\Windows\Start Menu\Programs\Startup",
+        Path(os.getenv("PROGRAMDATA", "")) / r"Microsoft\Windows\Start Menu\Programs\Startup",
+    ]
+    for folder in folders:
+        if folder.exists():
+            for file in folder.iterdir():
+                entries.append((file.name, str(file)))
+
+    if entries:
+        width = max(len(name) for name, _ in entries)
+        print(f"{'Name':<{width}} Path")
+        print("-" * (width + 20))
+        for name, path in entries:
+            print(f"{name:<{width}} {path}")
+    else:
+        print("(no startup entries found)")
+
+# ══════════════════════════════════════════════════════════════════════════
 # CLI
 # ══════════════════════════════════════════════════════════════════════════
 
 def main():
     p = argparse.ArgumentParser(description="Windows admin toolkit (IT 390R)")
     p.add_argument("--task", required=True,
-                   choices=["win-events", "win-pkgs", "win-services"],
+                   choices=["win-events", "win-pkgs", "win-services", 
+                            "win-tasks", "win-shadow", "win-startup"],
                    help="Which analysis to run")
 
     # win-events options
@@ -219,6 +302,12 @@ def main():
         win_pkgs(args.csv)
     elif args.task == "win-services":
         win_services(args.watch, args.fix)
+    elif args.task == "win-tasks":
+        win_tasks()
+    elif args.task == "win-shadow":
+        win_shadow()
+    elif args.task == "win-startup":
+        win_startup()
 
 if __name__ == "__main__":
     main()

@@ -1,0 +1,64 @@
+I added 3 new tasks:
+1. win-tasks – Scheduled Tasks Overview
+    Queries all scheduled tasks on the system using schtasks. Displays task names, statuses, 
+    and last run times in a readable summary. Useful for identifying disabled or failing scheduled jobs.
+
+    Data Source: schtasks /query /fo LIST /v
+    Permissions: Requires administrator privileges.
+    Output: Task name, status, last run time.
+
+2. win-shadow – Shadow Storage Usage
+    Description:
+    Displays how much disk space is allocated and used for Volume Shadow Copies 
+    (used by System Restore and backup tools). Helps assess if shadow storage is consuming excessive space.
+
+    Data Source: vssadmin list shadowstorage
+    Permissions: Requires administrator privileges.
+    Output: Volume, used space, allocated space, max space.
+
+3. win-startup – Startup Programs
+    Description:
+    Lists all programs configured to run at user login. Combines entries from the Windows Registry 
+    and Startup folders. Useful for identifying unnecessary or suspicious auto-start programs.
+
+    Data Source: Registry (Run keys) and Startup folders.
+    Permissions: No admin required (unless accessing system-wide startup).
+    Output: Program name and launch path.
+
+All of them are read-only tasks, meaning it won't affect the system, 
+just displaying the results on the CLI and/or store them into file(s).
+
+I had some issues that I had to run VS Code as an admin, 
+or how the task for startup programs needs me to import os in order for it to work.
+
+Examples of the output:
+1. PS E:\School\BYU-H\Spring 2025\IT 390R (DevOps)\activities-supk\Activity-03> python analyze_windows.py --task win-tasks 
+
+    🗓️ Scheduled Tasks (363 entries)
+    - \Adobe Acrobat Update Task | Status: Ready | Last Run: 5/24/2025 10:18:20 AM      
+    - \Adobe Acrobat Update Task | Status: Ready | Last Run: 5/24/2025 10:18:20 AM      
+    - \ASUS Optimization 36D18D69AFC3 | Status: Ready | Last Run: 11/30/1999 12:00:00 AM
+    - \ASUS Update Checker 2.0 | Status: Ready | Last Run: 5/24/2025 12:06:20 PM        
+    - \ASUSSmartDisplayControl | Status: Ready | Last Run: 5/24/2025 10:06:20 AM
+    ...
+
+2. PS E:\School\BYU-H\Spring 2025\IT 390R (DevOps)\activities-supk\Activity-03> python analyze_windows.py --task win-shadow
+
+    🧊 Shadow Storage Info
+    vssadmin 1.1 - Volume Shadow Copy Service administrative command-line tool
+    (C) Copyright 2001-2013 Microsoft Corp.
+
+    For volume: (C:)\\?\Volume{fbc3478c-a6ff-4cca-80b3-7267ee3b389d}\
+    Shadow Copy Storage volume: (C:)\\?\Volume{fbc3478c-a6ff-4cca-80b3-7267ee3b389d}\
+    Used Shadow Copy Storage space: 8.49 GB (1%)
+    Allocated Shadow Copy Storage space: 8.89 GB (1%)
+    Maximum Shadow Copy Storage space: 10.0 GB (2%)
+
+3. PS E:\School\BYU-H\Spring 2025\IT 390R (DevOps)\activities-supk\Activity-03> python analyze_windows.py --task win-startup
+
+    🚀 Startup Programs
+    Name                                                     Path
+    ----------------------------------------------------------------------------
+    SecurityHealth                                           %windir%\system32\SecurityHealthSystray.exe
+    SteelSeriesGG                                            "C:\Program Files\SteelSeries\GG\SteelSeriesGG.exe" -dataPath="C:\ProgramData\SteelSeries\GG" -dbEnv=produ
+    ...
