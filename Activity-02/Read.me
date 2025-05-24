@@ -1,0 +1,26 @@
+I finished the tasks and included the part where the script analyzes URLs bots try to download
+The reason that part shows nothing is because there's no attempt for using curl or wget in the log
+
+PS E:\School\BYU-H\Spring 2025\IT 390R (DevOps)\activities-supk\Activity-02> python analyze_log.py cowrie-tiny.log --task failed-logins --min-count 15
+Failed login attempts per IP (≥ 15)
+IP Address     Failures
+-----------------------
+197.5.145.69         28
+2.82.170.124         25
+106.13.236.133       24
+159.89.130.245       18
+167.71.234.157       17
+139.186.77.46        17
+104.42.113.137       15
+121.102.93.198       15
+PS E:\School\BYU-H\Spring 2025\IT 390R (DevOps)\activities-supk\Activity-02> python analyze_log.py cowrie-tiny.log --task successful-creds
+Successful username/passwords by unique IPs
+Username        Password         IP_Count
+-----------------------------------------
+b'root'         b'admin'                8
+b'root'         b'password'             1
+b'oracle'       b'oracle'               1
+PS E:\School\BYU-H\Spring 2025\IT 390R (DevOps)\activities-supk\Activity-02> python analyze_log.py cowrie-tiny.log --task wget-drops     
+Downloaded URLs (via wget/curl)
+URL Attempts
+------------
