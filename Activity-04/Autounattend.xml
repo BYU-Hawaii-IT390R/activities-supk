@@ -32,8 +32,7 @@
                             <PlainText>false</PlainText>
                         </Password>
                         <Name>student</Name>
-                        <DisplayName>student</DisplayName>
-                        <Group>admin</Group>
+                        <Group>Administrators</Group>
                     </LocalAccount>
                 </LocalAccounts>
             </UserAccounts>
